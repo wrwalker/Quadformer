@@ -32,9 +32,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     public static   PointF viewOffset;
 
     public static   Player player;
-//    public static   NextLevelBackgroundTile nextLevelBackgroundTile;
 
-    public static   ArrayList<Character> entityList;
+//    public static   ArrayList<Character> entityList;
     public static   ArrayList<BackgroundTile> backgroundTileList;
     public static   ArrayList<MidgroundTile> midgroundTileList;
     public static   ArrayList<GroundTile> groundTileList;
@@ -144,15 +143,15 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     public void generateLevel() {
 
-        initializeColors();
-        createBackground(level);
-        createGround(level);
-        createLights(level);
-        viewOffset = new PointF();
+        synchronized(syncLock) {
+            initializeColors();
+            createBackground(level);
+            createGround(level);
+            createLights(level);
 
-
-//        player = new Player(new PointF(129, 0), 23, 68, 0xff999977);
-        player = new Player(new PointF(129, 0), 23, 68, 0xffC9C9A7);
+            viewOffset = new PointF();
+            player = new Player(new PointF(129, 0), 23, 68, 0xffC9C9A7);
+        }
     }
 
     private void createLights(int level) {
