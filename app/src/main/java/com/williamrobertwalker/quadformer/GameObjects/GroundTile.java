@@ -1,10 +1,10 @@
 package com.williamrobertwalker.quadformer.GameObjects;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
+
 import com.williamrobertwalker.quadformer.GameView;
 import com.williamrobertwalker.quadformer.VectorMethods;
 
@@ -147,7 +147,7 @@ public class GroundTile {
                     point2 = VectorMethods.scale(tempVector3, VectorMethods.add(tempVector, nextVertex, VectorMethods.sub(tempVector, nextVertex, VectorMethods.scale(tempVector, (GameView.lights.get(j).location), 2))), 100);
 
                     //Drawing the shadow quads.
-                    path.reset();
+                    path.rewind();
                     path.moveTo(currentVertex.x - GameView.viewOffset.x, currentVertex.y - GameView.viewOffset.y);
                     path.lineTo(point1.x - GameView.viewOffset.x, point1.y - GameView.viewOffset.y);
                     path.lineTo(point2.x - GameView.viewOffset.x, point2.y - GameView.viewOffset.y);

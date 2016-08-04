@@ -11,7 +11,12 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.williamrobertwalker.quadformer.GameObjects.*;
+import com.williamrobertwalker.quadformer.GameObjects.BackgroundTile;
+import com.williamrobertwalker.quadformer.GameObjects.GroundTile;
+import com.williamrobertwalker.quadformer.GameObjects.Light;
+import com.williamrobertwalker.quadformer.GameObjects.MidgroundTile;
+import com.williamrobertwalker.quadformer.GameObjects.NextLevelBackgroundTile;
+import com.williamrobertwalker.quadformer.GameObjects.Player;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,6 +35,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     public static   UpdateThread updateThread;
     public static   DrawThread drawThread;
     public static   PointF viewOffset;
+    public static   int diagonalScreenLength;
 
     public static   Player player;
 
@@ -112,6 +118,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
         //Draw shadows
         for(int i = 0; i < groundTileList.size() ; i++) {
+            //FIXME: Badly coded: Works by assuming only one light. Will cause major issues with multiple light sources. Fix for this issue or remove possibility of multiple lights.
+            //groundTile.location is the min of the groundTile.
+
+            double distanceOfGroundTileFromLight = Math.hypot((groundTileList.get(i).location.x + groundTileList.get(i).getWidth()/2) - GameView.lights.get(0).location.x,
+                    (groundTileList.get(i).location.y + groundTileList.get(i).getHeight()/2) - GameView.lights.get(0).location.y);
+            double distanceOfPlayerFromLight = Math.hypot(GameView.player.location.x - GameView.lights.get(0).location.x,
+                    GameView.player.location.y - GameView.lights.get(0).location.y);
+
             groundTileList.get(i).drawShadow(canvas);
         }
         player.drawShadow(canvas);
@@ -144,6 +158,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     public void generateLevel() {
 
         synchronized(syncLock) {
+            diagonalScreenLength = (int) Math.hypot(getWidth(), getHeight()) + 2;
+            Log.i("SCREEN LENGTH", "Screen length is: " + diagonalScreenLength);
             initializeColors();
             createBackground(level);
             createGround(level);

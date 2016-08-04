@@ -1,7 +1,6 @@
 package com.williamrobertwalker.quadformer.GameObjects;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
@@ -26,8 +25,8 @@ public class Entity {
     Paint shadowPaint = new Paint();
 
     //Constants
-    float BOUNCECONSTANT = 0.3f, FRICTIONCONSTANT = 0.05f, gravityConstant = 0.3f, DRAGCONSTANT = 0.999999f;
-    float MAXSPEED = 12;
+    final float BOUNCECONSTANT = 0.3f, FRICTIONCONSTANT = 0.05f, gravityConstant = 0.3f, DRAGCONSTANT = 0.999999f;
+    final float MAXSPEED = 12;
 
 
 
@@ -57,10 +56,6 @@ public class Entity {
                 {
                     this.velocity.y = 0;
                 }
-//                else
-//                {
-//                    this.velocity.x = 0;
-//                }
                 collisionResponse(GameView.groundTileList.get(i));
             }
         }
@@ -280,7 +275,7 @@ public class Entity {
     {
 
         if(readyToJump) {
-            this.velocity.y = -10;
+            this.velocity.y = -12;
         }
     }
 
