@@ -3,6 +3,7 @@ package com.williamrobertwalker.quadformer.GameObjects;
 import android.graphics.Canvas;
 import android.graphics.PointF;
 import android.util.Log;
+
 import com.williamrobertwalker.quadformer.GameView;
 import com.williamrobertwalker.quadformer.MainActivity;
 
@@ -16,6 +17,11 @@ public class NextLevelBackgroundTile extends BackgroundTile {
     public NextLevelBackgroundTile(PointF location, int color) {
 
         super(color, location, 128, 128, false);
+    }
+
+    public NextLevelBackgroundTile(PointF location, int width, int height, int color) {
+
+        super(color, location, width, height, false);
     }
 
     public void update() {

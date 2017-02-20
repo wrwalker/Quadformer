@@ -4,7 +4,11 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.util.Log;
 
-import com.williamrobertwalker.quadformer.GameObjects.*;
+import com.williamrobertwalker.quadformer.GameObjects.BackgroundTile;
+import com.williamrobertwalker.quadformer.GameObjects.GroundTile;
+import com.williamrobertwalker.quadformer.GameObjects.Light;
+import com.williamrobertwalker.quadformer.GameObjects.MidgroundTile;
+import com.williamrobertwalker.quadformer.GameObjects.NextLevelBackgroundTile;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,13 +21,20 @@ import java.util.ArrayList;
  */
 public class Load {
 
+    //Original was 12.75%.
+    //TODO: Fix the fact that at 8.5% size, the character will stick to the ceiling and walk around as if it's Spiderman.
+    public static final float PERCENT_SIZE_OF_OBJECTS_RELATIVE_TO_SCREEN = (12.75f / 100);
+
     /**
      * Loads the background from files using the current level
      * @param level Needs the current level to load the correct files.
-     * @param context Needs a context to load from the file.
-     * @throws IOException Incase it explodes.
+     * @param context Needs a context to load from the file in assets.
+     * @throws IOException Incase !$#@ goes south!
      */
     public static void background(int level, Context context) throws IOException {
+
+        final int OBJECT_SIZE = (int) (PERCENT_SIZE_OF_OBJECTS_RELATIVE_TO_SCREEN * GameView.diagonalScreenSize);
+
         ArrayList<String> lines = new ArrayList<>();
         int width = 0;
         int height;
@@ -55,15 +66,15 @@ public class Load {
                     char character = line.charAt(i);
                     try {
                         if(Character.getNumericValue(character) == 1) {
-                            BackgroundTile backgroundTile = new BackgroundTile( GameView.getColorFromID(Character.getNumericValue(character),  GameView.backgroundColorMap), new PointF(i, j), 128, 128, false);
+                            BackgroundTile backgroundTile = new BackgroundTile( GameView.getColorFromID(Character.getNumericValue(character),  GameView.backgroundColorMap), new PointF(i, j), OBJECT_SIZE, OBJECT_SIZE, false);
                             GameView.backgroundTileList.add(backgroundTile);
                         }
                         else if(Character.getNumericValue(character) == 2) {
-                            MidgroundTile midgroundTile = new MidgroundTile( GameView.getColorFromID(1,  GameView.midgroundColorMap), new PointF(i, j), 128, 128, false);
+                            MidgroundTile midgroundTile = new MidgroundTile( GameView.getColorFromID(1,  GameView.midgroundColorMap), new PointF(i, j), OBJECT_SIZE, OBJECT_SIZE, false);
                             GameView.midgroundTileList.add(midgroundTile);
                         }
                         else if(Character.getNumericValue(character) == 3) {
-                            GameView.nextLevelBackgroundTile = new NextLevelBackgroundTile(new PointF(i, j), 0xffffffff);
+                            GameView.nextLevelBackgroundTile = new NextLevelBackgroundTile(new PointF(i, j), OBJECT_SIZE, OBJECT_SIZE, 0xffffffff);
                         }
 //                        if (Character.getNumericValue(character) == 9) {
 //                            GameView.nextLevelBackgroundTile = new NextLevelBackgroundTile(new PointF(i, j));
@@ -77,8 +88,8 @@ public class Load {
         }
     }
 
-    //TODO: make it so that the width of the ground tile isn't based on the color. Make it based on a static number that can be changed.
-    //TODO: this will make sure that when you move from a phone to a tablet you don't get more viewing distance.
+    //DONE: make it so that the width of the ground tile isn't based on the color. Make it based on a static number that can be changed.
+    //DONE: this will make sure that when you move from a phone to a tablet you don't get more viewing distance.
     /**
      * Loads all of the walls from a filename
      * @param level The level of the game to load the file for.
@@ -86,9 +97,12 @@ public class Load {
      * @throws IOException Incase it explodes.
      */
     public static void ground(int level, Context context) throws IOException {
+
+        final int OBJECT_SIZE = (int) (PERCENT_SIZE_OF_OBJECTS_RELATIVE_TO_SCREEN * GameView.diagonalScreenSize);
+
         ArrayList<String> lines = new ArrayList<>();
-        int width = 0;
-        int height;
+        int widthOfGrid = 0;
+        int heightOfGrid;
         boolean loadedSuccessfully = true;
 
         InputStream is = context.getAssets().open("Levels/ground_level_" + level);
@@ -104,21 +118,23 @@ public class Load {
 
             if (!line.startsWith("!")) { //If the line isn't a comment
                 lines.add(line);
-                width = Math.max(width, line.length());
+
+                //Continually checks to see if the current line is larger than the widthOfGrid.
+                widthOfGrid = Math.max(widthOfGrid, line.length());
 
             }
         }
-        height = lines.size();
+        heightOfGrid = lines.size();
 
-        for (int j = 0; j < height; j++) {
+        for (int j = 0; j < heightOfGrid; j++) {
             String line = lines.get(j);
-            for (int i = 0; i < width; i++) {
+            for (int i = 0; i < widthOfGrid; i++) {
                 if (i < line.length()) {
                     char character = line.charAt(i);
                     try {
                         if (Character.getNumericValue(character) > 0) {
                             int color = GameView.getColorFromID(Character.getNumericValue(character), GameView.groundTileColorMap);
-                            new GroundTile(color, new PointF(i, j), 128, 128);
+                            new GroundTile(color, new PointF(i, j), OBJECT_SIZE, OBJECT_SIZE);
 //                            GameView.wallList.add(wall);
                         }
                     } catch (Exception e) {

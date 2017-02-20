@@ -25,13 +25,16 @@ public class Entity {
     Paint shadowPaint = new Paint();
 
     //Constants
-    final float BOUNCECONSTANT = 0.3f, FRICTIONCONSTANT = 0.05f, gravityConstant = 0.3f, DRAGCONSTANT = 0.999999f;
+    //originally 0.3f
+    float gravityConstant;
     final float MAXSPEED = 12;
 
 
 
     public Entity(PointF location, int width, int height, int color)
     {
+//        gravityConstant = GameView.screenHeight * (0.111f / 200);
+        gravityConstant = (330.3f/GameView.diagonalScreenSize);
         this.location = location;
         this.width = width;
         this.height = height;
@@ -41,6 +44,8 @@ public class Entity {
         max = new PointF(location.x + width, location.y + height);
         this.shadowPaint.setColor(GameView.shadowColor);
     }
+
+
     public void update()
     {
 
@@ -118,8 +123,8 @@ public class Entity {
                     //Drawing the shadow quads.
                     path.reset();
                     path.moveTo(currentVertex.x - GameView.viewOffset.x, currentVertex.y - GameView.viewOffset.y);
-                    path.lineTo(point1.x - GameView.viewOffset.x, point1.y - GameView.viewOffset.y);
                     path.lineTo(point2.x - GameView.viewOffset.x, point2.y - GameView.viewOffset.y);
+                    path.lineTo(point1.x - GameView.viewOffset.x, point1.y - GameView.viewOffset.y);
                     path.lineTo(nextVertex.x - GameView.viewOffset.x, nextVertex.y - GameView.viewOffset.y);
                     canvas.drawPath(path, shadowPaint);
                 }

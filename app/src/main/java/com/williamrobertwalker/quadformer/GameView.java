@@ -30,12 +30,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
 
     public static   int level = 1;
-//    public static   boolean doLevelChange = false; //TODO: Make this into a method doLevelChange that calls generateLevel.
 
     public static   UpdateThread updateThread;
     public static   DrawThread drawThread;
     public static   PointF viewOffset;
-    public static   int diagonalScreenLength;
+    public static   int diagonalScreenSize;
+    public static   int screenHeight;
 
     public static   Player player;
 
@@ -112,7 +112,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     public void draw(Canvas canvas) {
 
         super.draw(canvas);
-//        canvas.drawColor(0xff182022);
         canvas.drawColor(backgroundColor);
 
 
@@ -121,10 +120,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             //FIXME: Badly coded: Works by assuming only one light. Will cause major issues with multiple light sources. Fix for this issue or remove possibility of multiple lights.
             //groundTile.location is the min of the groundTile.
 
-            double distanceOfGroundTileFromLight = Math.hypot((groundTileList.get(i).location.x + groundTileList.get(i).getWidth()/2) - GameView.lights.get(0).location.x,
-                    (groundTileList.get(i).location.y + groundTileList.get(i).getHeight()/2) - GameView.lights.get(0).location.y);
-            double distanceOfPlayerFromLight = Math.hypot(GameView.player.location.x - GameView.lights.get(0).location.x,
-                    GameView.player.location.y - GameView.lights.get(0).location.y);
+//            double distanceOfGroundTileFromLight = Math.hypot((groundTileList.get(i).location.x + groundTileList.get(i).getWidth()/2) - GameView.lights.get(0).location.x,
+//                    (groundTileList.get(i).location.y + groundTileList.get(i).getHeight()/2) - GameView.lights.get(0).location.y);
+//            double distanceOfPlayerFromLight = Math.hypot(GameView.player.location.x - GameView.lights.get(0).location.x,
+//                    GameView.player.location.y - GameView.lights.get(0).location.y);
 
             groundTileList.get(i).drawShadow(canvas);
         }
@@ -132,7 +131,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
         //The background and midground are drawn after the shadows because
         //the shadows have to be opaque to not overlap. Consequently the background blobs in the background
-        //and the midground have to be translucent and drawn over top of the shadows. This is a stupid
+        //and the midground have to be translucent and drawn over top of the shadows. Yes, I know: this is a stupid
         //way of doing this.
         //Draw background
         for(int i = 0; i < backgroundTileList.size() ; i++) {
@@ -158,15 +157,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     public void generateLevel() {
 
         synchronized(syncLock) {
-            diagonalScreenLength = (int) Math.hypot(getWidth(), getHeight()) + 2;
-            Log.i("SCREEN LENGTH", "Screen length is: " + diagonalScreenLength);
+            //TODO: Use diagonalScreenSize to modify the size of loaded objects in the game.
+            diagonalScreenSize = (int) Math.hypot(getWidth(), getHeight());
+            screenHeight = getHeight();
+            Log.i("SCREEN SIZE", "Screen size is: " + diagonalScreenSize);
             initializeColors();
             createBackground(level);
             createGround(level);
             createLights(level);
 
             viewOffset = new PointF();
-            player = new Player(new PointF(129, 0), 23, 68, 0xffC9C9A7);
+            player = new Player(new PointF(129, 0), (int) ((1.94f/100) * diagonalScreenSize), (int) (((1.94f/100) * diagonalScreenSize) * 3), 0xffC9C9A7);
         }
     }
 
@@ -235,13 +236,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     public void surfaceCreated(SurfaceHolder holder) {
         synchronized(syncLock) {
 
-//            imageMap = new ArrayMap<>();
-//            backgroundColorMap = new ArrayMap<>();
-//            wallImageMap = new ArrayMap<>();
-//
-//            decodeImages();
-
             generateLevel();
+
+//            MainActivity.alreadyStarted = true;
+
 
 
 //            if(!MainActivity.alreadyStarted) {
@@ -253,7 +251,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                 drawThread.setRunning(true); //start game loop
                 drawThread.start();
 //                MainActivity.alreadyStarted = true;
+                Log.i("Flag", "Threads Started?");
 //            }
+
         }
     }
 
@@ -262,6 +262,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
+
 
     }
 }
