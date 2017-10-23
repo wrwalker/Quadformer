@@ -68,7 +68,7 @@ public class DrawThread extends Thread {
         }
     }
 
-    public void setRunning(boolean running) {
+    void setRunning(boolean running) {
         this.running = running;
     }
 

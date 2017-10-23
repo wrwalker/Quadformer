@@ -65,6 +65,13 @@ public class MainActivity extends Activity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+
+        super.onDestroy();
+        pauseGame();
+    }
+
     public static void autoPauseGame() {
 
         if(GameView.updateThread != null && GameView.drawThread != null) {

@@ -18,7 +18,6 @@ public class Entity {
     public int height;
     public Paint paint;
     public PointF max, min;
-    public boolean readyToJump = false;
 
     PointF[] vertices = new PointF[4];
 
@@ -26,15 +25,15 @@ public class Entity {
 
     //Constants
     //originally 0.3f
-    float gravityConstant;
-    final float MAXSPEED = 12;
+    private final float GRAVITY_CONSTANT = (1500f/GameView.diagonalScreenSize);
+    private final float JUMP_VELOCITY = 25;
+    final float MAXSPEED = 20;
 
 
 
     public Entity(PointF location, int width, int height, int color)
     {
-//        gravityConstant = GameView.screenHeight * (0.111f / 200);
-        gravityConstant = (330.3f/GameView.diagonalScreenSize);
+//        GRAVITY_CONSTANT = GameView.screenHeight * (0.111f / 200);
         this.location = location;
         this.width = width;
         this.height = height;
@@ -45,18 +44,21 @@ public class Entity {
         this.shadowPaint.setColor(GameView.shadowColor);
     }
 
-
+    /**
+     * Updates the entity
+     */
     public void update()
     {
-
-        readyToJump = velocity.y == 0;
-
+        //Update fall and move so it falls and moves.
         fall();
         move();
-        for(int i = 0; i < GameView.groundTileList.size(); i++) //TODO: FIXME
+
+        //For every ground Tile, check if this guy is touching them.
+        for(int i = 0; i < GameView.groundTileList.size(); i++) //TODO: FIXME. Try adding a distance calculation to avoid checking EVERY SINGLE TILE IN THE GAME!
         {
             if(this.isTouchingGroundTile(GameView.groundTileList.get(i))) {
-                //Do a collision response from the ground tile and pass in the point on it nearest to the middle of this.
+                //If its touching the tile, but not the side, then it's obviously touching the top or bottom,
+                //so stop this from moving up or down.
                 if(!isTouchingSide(GameView.groundTileList.get(i)))
                 {
                     this.velocity.y = 0;
@@ -71,12 +73,17 @@ public class Entity {
     {
         return Math.abs((this.location.x + this.width/2) - (groundTile.location.x + groundTile.getWidth()/2)) > (groundTile.getWidth()/2);
     }
+
     private boolean isTouchingTop(GroundTile groundTile)
     {
-        //Mostly Broken if touching top.
+        //Mostly Broken if touching top. Like, why is there a 7 there? Did 6 not work?
         return (this.location.x > (groundTile.location.x + 7)) || ((this.location.x + this.width) < (groundTile.location.x + (groundTile.getWidth() - 7)));
     }
 
+    /**
+     * Draws the entity to the canvas
+     * @param canvas The canvas which to draw the entity on.
+     */
     public void draw(Canvas canvas)
     {
         canvas.drawRect(location.x - GameView.viewOffset.x, location.y - GameView.viewOffset.y, (location.x + width) - GameView.viewOffset.x, (location.y + height) - GameView.viewOffset.y, paint);
@@ -109,7 +116,6 @@ public class Entity {
                 currentVertex = vertices[i];
                 nextVertex = vertices[(i + 1) % vertices.length];
                 edge = VectorMethods.sub(tempVector, nextVertex, currentVertex);
-//                normal.set(edge.y, -edge.x);
                 normal.x = edge.y;
                 normal.y = -edge.x;
                 lightToCurrent = VectorMethods.sub(tempVector, currentVertex, light.location);
@@ -132,7 +138,7 @@ public class Entity {
         }
     }
 
-    public void move() {
+    private void move() {
         this.location.x += this.velocity.x;
         this.location.y += this.velocity.y;
         this.min = location;
@@ -141,30 +147,24 @@ public class Entity {
         this.max.y = location.y + height;
     }
 
-    public void fall()
+    private void fall()
     {
         if(this.velocity.y <= MAXSPEED) {
-            this.velocity.y += gravityConstant;
+            this.velocity.y += GRAVITY_CONSTANT;
         }
     }
 
+    /**
+     * Is this touching the ground tile?
+     * @param groundTile The ground tile in question
+     * @return true or false?
+     */
+    private boolean isTouchingGroundTile(GroundTile groundTile) {
 
-    public boolean isTouchingGroundTile(GroundTile groundTile) {
+        //Return true if  !(furthest right side < groundtile furthest left side) || (furthest left side > groundtile furthest right side)
+        //So if they miss eachother on x values.
+        //Its a similar case with y values.
 
-//        boolean isTouchingHorizontally = true;
-//        boolean isTouchingVertically = true;
-//        //AABB collision detection;
-//        // Exit with no intersection if found separated along an axis
-//        if((this.max.x) < (groundTile.min.x) || (this.min.x) > (groundTile.max.x))
-//        {
-//            isTouchingHorizontally = false;
-//        }
-//        if((this.location.y + height) < (groundTile.location.y) || (this.location.y) > (groundTile.location.y + groundTile.getHeight()))
-//        {
-//            isTouchingVertically = false;
-//        }
-//
-//        return isTouchingHorizontally && isTouchingVertically;
         return !(((this.location.x + width) < (groundTile.location.x) || (this.location.x) > (groundTile.location.x + groundTile.getWidth())))
                 && !(((this.location.y + height) < (groundTile.location.y) || (this.location.y) > (groundTile.location.y + groundTile.getHeight())));
 
@@ -173,14 +173,21 @@ public class Entity {
 
 
     //TODO: FIXME
-    public void collisionResponse(GroundTile groundTile)
+    /**
+     * A response to what happens if the player is overlapping a ground tile.
+     * It will figure out the penetration delta, or how this is penetrating the object.
+     * @param groundTile The ground tile in question.
+     */
+    private void collisionResponse(GroundTile groundTile)
     {
         //New locations to make it easier to do the math with the locations in the middle of the boxes.
         PointF newLocation = new PointF(location.x + width/2, location.y + height/2);
         PointF newGroundTileLocation = new PointF(groundTile.location.x + groundTile.getWidth()/2, groundTile.location.y + groundTile.getHeight()/2);
 
         PointF newRadius = new PointF(this.width/2, this.height/2);
-        PointF groundTileRadius = new PointF(groundTile.getWidth()/2, groundTile.getHeight()/2);//Yes, I know rectangles don't have radii. It's the width from the center to the right edge and the height of the center to the top.
+
+        //Yes, I know rectangles don't have radii. It's the width from the center to the right edge and the height of the center to the top.
+        PointF groundTileRadius = new PointF(groundTile.getWidth()/2, groundTile.getHeight()/2);
 
         PointF delta = new PointF(newLocation.x - newGroundTileLocation.x, newLocation.y - newGroundTileLocation.y);//tile->obj delta. So the change in (delta) or the difference in position of groundTile and object.
 
@@ -229,8 +236,13 @@ public class Entity {
 //        this.location.y += (penetration.y/normaizationDenominator);
     }
 
-//    //dx, dy is the surface normal.
-    public void ReportCollisionVsWorld(PointF projectionVector, float dx, float dy)
+    /**
+     * This finally resolves the collision
+     * @param projectionVector The penetration vector
+     * @param dx surface normal x component. Currently unused.
+     * @param dy surface normal y component. Currently unused.
+     */
+    void ReportCollisionVsWorld(PointF projectionVector, float dx, float dy)
     {
         //calc velocity
 //        PointF velocity = new PointF(this.location.x - this.oldLocation.x, this.location.y - this.oldLocation.y);
@@ -279,12 +291,13 @@ public class Entity {
     public void jump()
     {
 
-        if(readyToJump) {
-            this.velocity.y = -12;
+        //Check if its not moving up or down, and if that's the case then this is ready to jump, so jump!
+        if(velocity.y == 0) {
+            this.velocity.y = -JUMP_VELOCITY;
         }
     }
 
-    public PointF[] getVertices() {
+    PointF[] getVertices() {
         return new PointF[] {
                 new PointF(this.location.x, this.location.y),
                 new PointF(this.location.x, this.location.y + height),

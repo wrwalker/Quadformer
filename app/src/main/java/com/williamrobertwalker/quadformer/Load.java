@@ -23,7 +23,9 @@ public class Load {
 
     //Original was 12.75%.
     //TODO: Fix the fact that at 8.5% size, the character will stick to the ceiling and walk around as if it's Spiderman.
-    public static final float PERCENT_SIZE_OF_OBJECTS_RELATIVE_TO_SCREEN = (12.75f / 100);
+//    public static final float PERCENT_SIZE_OF_OBJECTS_RELATIVE_TO_SCREEN = (12.75f / 100);
+    static final float PERCENT_SIZE_OF_OBJECTS_RELATIVE_TO_SCREEN = (8.75f / 100);
+    final int blockHeight = 3;
 
     /**
      * Loads the background from files using the current level
@@ -31,7 +33,7 @@ public class Load {
      * @param context Needs a context to load from the file in assets.
      * @throws IOException Incase !$#@ goes south!
      */
-    public static void background(int level, Context context) throws IOException {
+    static void background(int level, Context context) throws IOException {
 
         final int OBJECT_SIZE = (int) (PERCENT_SIZE_OF_OBJECTS_RELATIVE_TO_SCREEN * GameView.diagonalScreenSize);
 
@@ -91,12 +93,12 @@ public class Load {
     //DONE: make it so that the width of the ground tile isn't based on the color. Make it based on a static number that can be changed.
     //DONE: this will make sure that when you move from a phone to a tablet you don't get more viewing distance.
     /**
-     * Loads all of the walls from a filename
+     * Loads all of the ground tiles from a filename
      * @param level The level of the game to load the file for.
      * @param context Needs a context to load from the file.
      * @throws IOException Incase it explodes.
      */
-    public static void ground(int level, Context context) throws IOException {
+    static void ground(int level, Context context) throws IOException {
 
         final int OBJECT_SIZE = (int) (PERCENT_SIZE_OF_OBJECTS_RELATIVE_TO_SCREEN * GameView.diagonalScreenSize);
 
@@ -153,7 +155,7 @@ public class Load {
 
     }
 
-    public static void lights(int level, Context context) throws IOException {
+    static void lights(int level, Context context) throws IOException {
         ArrayList<String> lines = new ArrayList<>();
         int width = 0;
         int height;

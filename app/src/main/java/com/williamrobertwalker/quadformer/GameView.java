@@ -262,7 +262,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-
+        MainActivity.pauseGame();
 
     }
 }

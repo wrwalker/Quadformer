@@ -14,14 +14,14 @@ import com.williamrobertwalker.quadformer.VectorMethods;
 
 
 public class GroundTile {
-    public PointF location;
+    PointF location;
     private final int width;
     private final int height;
-    Paint paint = new Paint();
+    private Paint paint = new Paint();
 
-    public PointF max, min, topRight, bottomLeft;
-    PointF[] vertices = new PointF[4];
-    Paint shadowPaint = new Paint();
+    private PointF max, min, topRight, bottomLeft;
+    private PointF[] vertices = new PointF[4];
+    private Paint shadowPaint = new Paint();
 
 
     public GroundTile(int color, PointF location, int width, int height) {
@@ -73,23 +73,23 @@ public class GroundTile {
 
     //Variables for the drawShadow Method.
 
-    PointF currentVertex;
-    PointF nextVertex;
-    PointF edge;
-    PointF normal = new PointF();
-    PointF lightToCurrent;
+    private PointF currentVertex;
+    private PointF nextVertex;
+    private PointF edge;
+    private PointF normal = new PointF();
+    private PointF lightToCurrent;
 
-    PointF point1;
-    PointF point2;
+    private PointF point1;
+    private PointF point2;
 
     /**
      * Temporary vector to reuse pre-allocated memory instead of creating (literally) hundreds of thousands of single-use instances of PointFs.
      */
-    PointF tempVector = new PointF();
-    PointF tempVector2 = new PointF();
-    PointF tempVector3 = new PointF();
+    private PointF tempVector = new PointF();
+    private PointF tempVector2 = new PointF();
+    private PointF tempVector3 = new PointF();
 
-    Path path = new Path();
+    private Path path = new Path();
 
 //    public void drawShadow(Canvas canvas)
 //    {
@@ -156,7 +156,6 @@ public class GroundTile {
                 }
             }
         }
-
     }
 
 

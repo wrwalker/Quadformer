@@ -8,13 +8,19 @@ import android.graphics.PointF;
 public class VectorMethods {
 
 
+    /**
+     * Performs dot product operation on 2 vectors
+     * @param vector1 First vector
+     * @param vector2 Second vector
+     * @return The dot product value of the two vectors
+     */
     public static float dot(PointF vector1, PointF vector2)
     {
         return (vector1.x * vector2.x) + (vector1.y * vector2.y);
     }
 
     /**
-     *
+     * Subtract vectors
      * @param temporaryVector To reuse allocated memory.
      * @param vector1 The vector to be subtracted by the other.
      * @param vector2 The vector to subtract the first by.
@@ -28,7 +34,7 @@ public class VectorMethods {
     }
 
     /**
-     *
+     * Add vectors
      * @param temporaryVector To reuse allocated memory.
      * @param vector1 The vector to be added by the second.
      * @param vector2 The vector to add to the first.
@@ -42,7 +48,7 @@ public class VectorMethods {
     }
 
     /**
-     *
+     * Scale a vector
      * @param temporaryVector To reuse allocated memory.
      * @param vector The vector to be scaled.
      * @param scale The amount to scale the vector by.
@@ -59,7 +65,7 @@ public class VectorMethods {
 
 
 
-
+//These ones are kinda terrible because they use up way too much memory with garbage.
 
 
     /**
